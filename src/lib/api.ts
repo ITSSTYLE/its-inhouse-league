@@ -3,7 +3,14 @@ import { ZodError } from "zod";
 
 export function apiError(error: unknown) {
   if (error instanceof Response) {
-    return new NextResponse(error.statusText || "Request failed", { status: error.status });
+    const message =
+      error.status === 401
+        ? "Unauthorized. Please log in again."
+        : error.status === 403
+          ? "Forbidden. Admin access required."
+          : error.statusText || "Request failed";
+
+    return NextResponse.json({ error: message }, { status: error.status });
   }
 
   if (error instanceof ZodError) {
