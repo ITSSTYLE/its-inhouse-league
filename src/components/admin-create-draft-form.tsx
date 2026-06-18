@@ -21,10 +21,11 @@ export function AdminCreateDraftForm({ players }: { players: Player[] }) {
     setMessage(null);
 
     const response = await fetch("/api/drafts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ blueCaptainId, redCaptainId })
-    });
+  method: "POST",
+  credentials: "same-origin",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ blueCaptainId, redCaptainId })
+});
 
     const payload = await response.json();
     setIsSaving(false);
