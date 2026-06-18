@@ -1,10 +1,9 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database";
 import { requireEnv } from "@/lib/env";
 
-export async function createServerSupabaseClient(): Promise<SupabaseClient<Database>> {
+export async function createServerSupabaseClient() {
   const cookieStore = await cookies();
 
   return createServerClient<Database>(
@@ -15,14 +14,12 @@ export async function createServerSupabaseClient(): Promise<SupabaseClient<Datab
         getAll() {
           return cookieStore.getAll();
         },
-        setAll(cookiesToSet: Array<{ name: string; value: string; options: CookieOptions }>) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
-          } catch {
-            // Server Components cannot set cookies. Middleware and route handlers refresh sessions.
-          }
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options);
+          });
         }
       }
     }
-  ) as unknown as SupabaseClient<Database>;
+  );
 }
